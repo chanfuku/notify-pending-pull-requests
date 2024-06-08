@@ -2,7 +2,7 @@ name: Notify Pending Pull Requests
 
 on:
   schedule:
-    - cron: '30 15 * * *' # JSTで毎日午前9時に実行
+    - cron: '0 0 * * *' # JSTで毎日午前9時に実行
 
 jobs:
   notify:
