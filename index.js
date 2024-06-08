@@ -19,6 +19,8 @@ async function notifyPendingPullRequests() {
   if (allPendingReviews.length > 0) {
     const message = formatSlackMessage(allPendingReviews);
     sendSlackNotification(message);
+  } else {
+    console.log('No pending pull requests found');
   }
 }
 
@@ -39,8 +41,7 @@ async function getOpenPullRequests(owner, repo) {
 }
 
 function isReviewerAndNotApproved(pullRequest) {
-  return true;
-  // return pullRequest.requested_reviewers.some(reviewer => reviewer.login === REVIEWER_USERNAME);
+  return pullRequest.requested_reviewers.some(reviewer => reviewer.login === REVIEWER_USERNAME);
 }
 
 function formatSlackMessage(pullRequests) {
