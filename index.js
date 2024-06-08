@@ -39,7 +39,8 @@ async function getOpenPullRequests(owner, repo) {
 }
 
 function isReviewerAndNotApproved(pullRequest) {
-  return pullRequest.requested_reviewers.some(reviewer => reviewer.login === REVIEWER_USERNAME);
+  return true;
+  // return pullRequest.requested_reviewers.some(reviewer => reviewer.login === REVIEWER_USERNAME);
 }
 
 function formatSlackMessage(pullRequests) {
