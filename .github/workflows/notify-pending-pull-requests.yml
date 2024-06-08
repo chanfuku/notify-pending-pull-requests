@@ -1,0 +1,29 @@
+name: Notify Pending Pull Requests
+
+on:
+  schedule:
+    - cron: '0 15 * * *' # JSTで毎日午前9時に実行
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run notification script
+        env:
+          REPOSITORIES_GITHUB: ${{ secrets.REPOSITORIES_GITHUB }}
+          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          REVIEWER_USERNAME: ${{ secrets.REVIEWER_USERNAME }}
+        run: node index.js
