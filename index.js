@@ -45,7 +45,7 @@ function isReviewerAndNotApproved(pullRequest) {
 }
 
 function formatSlackMessage(pullRequests) {
-  let message = `以下のプルリクエストが${REVIEWER_USERNAME}の承認待ちです:\n=`;
+  let message = `以下のプルリクエストが${REVIEWER_USERNAME}の承認待ちです:\n`;
 
   pullRequests.forEach(pr => {
     message += `<${pr.html_url}|${pr.title}>\n`;
