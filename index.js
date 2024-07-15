@@ -8,6 +8,11 @@ const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL; // Slack Webhook URL
 const REVIEWER_USERNAME = process.env.REVIEWER_USERNAME; // GitHub Username
 
 async function notifyPendingPullRequests() {
+  if (isWeekend(new Date())) {
+    console.log('weekend');
+    return;
+  }
+
   let allPendingReviews = [];
 
   for (const repo of REPOSITORIES_GITHUB) {
@@ -48,7 +53,7 @@ function formatSlackMessage(pullRequests) {
   let message = `以下のプルリクエストが${REVIEWER_USERNAME}の承認待ちです:\n`;
 
   pullRequests.forEach(pr => {
-    message += `<${pr.html_url}|${pr.title}>\n`;
+    message += `・<${pr.html_url}|${pr.title}>\n`;
   });
 
   return message;
@@ -76,6 +81,11 @@ function sendSlackNotification(message) {
     })
     .then(text => console.log('Slack notification sent:', text))
     .catch(error => console.error('Error:', error));
+}
+
+function isWeekend(date) {
+  const day = date.getDay();
+  return (day === 0 || day === 6); // 日曜日は0、土曜日は6
 }
 
 // 実行
