@@ -106,7 +106,9 @@ function sendSlackNotification(message) {
 }
 
 function isWeekend(date) {
-  const day = date.getDay();
+  // 日本時間
+  const japanDate = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
+  const day = japanDate.getDay();  
   return (day === 0 || day === 6); // 日曜日は0、土曜日は6
 }
 
