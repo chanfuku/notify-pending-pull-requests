@@ -14,19 +14,25 @@ async function notifyPendingPullRequests() {
   }
 
   let allPendingReviews = [];
+  let allApprovedReviews = [];
 
   for (const repo of REPOSITORIES_GITHUB) {
     const pullRequests = await getOpenPullRequests(repo.owner, repo.repo);
     const pendingReviews = pullRequests.filter(pr => isReviewerAndNotApproved(pr));
     allPendingReviews = allPendingReviews.concat(pendingReviews);
+    const approvedReviews = pullRequests.filter(pr => isAssigneeAndAllApproved(pr));
+    allApprovedReviews = allApprovedReviews.concat(approvedReviews);
   }
 
-  if (allPendingReviews.length > 0) {
-    const message = formatSlackMessage(allPendingReviews);
-    sendSlackNotification(message);
-  } else {
-    console.log('No pending pull requests found');
-  }
+  const pendingMessage = allPendingReviews.length > 0
+    ? formatPendingSlackMessage(allPendingReviews)
+    : 'No pending pull requests found\n\n';
+
+  const approvedMessage = allApprovedReviews.length > 0
+    ? formatAllApprovedSlackMessage(allApprovedReviews)
+    : 'No approved pull requests found';
+
+  sendSlackNotification(pendingMessage + approvedMessage);
 }
 
 async function getOpenPullRequests(owner, repo) {
@@ -49,8 +55,24 @@ function isReviewerAndNotApproved(pullRequest) {
   return pullRequest.requested_reviewers.some(reviewer => reviewer.login === REVIEWER_USERNAME);
 }
 
-function formatSlackMessage(pullRequests) {
+function isAssigneeAndAllApproved(pullRequest) {
+  const isAssigned = pullRequest.assignee?.login === REVIEWER_USERNAME;
+  const isAllApproved = pullRequest.requested_reviewers.length === 0;
+  return isAssigned && isAllApproved;
+}
+
+function formatPendingSlackMessage(pullRequests) {
   let message = `以下のプルリクエストが${REVIEWER_USERNAME}の承認待ちです:\n`;
+
+  pullRequests.forEach(pr => {
+    message += `・<${pr.html_url}|${pr.title}>\n`;
+  });
+
+  return message;
+}
+
+function formatAllApprovedSlackMessage(pullRequests) {
+  let message = `以下のプルリクエストは${REVIEWER_USERNAME}がassigneeかつ承認済です:\n`;
 
   pullRequests.forEach(pr => {
     message += `・<${pr.html_url}|${pr.title}>\n`;
