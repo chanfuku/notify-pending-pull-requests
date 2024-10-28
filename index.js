@@ -65,17 +65,17 @@ function formatPendingSlackMessage(pullRequests) {
   let message = `以下のプルリクエストが${REVIEWER_USERNAME}の承認待ちです:\n`;
 
   pullRequests.forEach(pr => {
-    message += `・<${pr.html_url}|${pr.title}>\n`;
+    message += `・<${pr.html_url}|${replaceAll(pr.title)}>\n`;
   });
 
   return message;
 }
 
 function formatAllApprovedSlackMessage(pullRequests) {
-  let message = `以下のプルリクエストは${REVIEWER_USERNAME}がassigneeかつ承認済です:\n`;
+  let message = `以下のプルリクエストは${REVIEWER_USERNAME}が担当者かつ承認済です:\n`;
 
   pullRequests.forEach(pr => {
-    message += `・<${pr.html_url}|${pr.title}>\n`;
+    message += `・<${pr.html_url}|${replaceAll(pr.title)}>\n`;
   });
 
   return message;
@@ -108,8 +108,13 @@ function sendSlackNotification(message) {
 function isWeekend(date) {
   // 日本時間
   const japanDate = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
-  const day = japanDate.getDay();  
+  const day = japanDate.getDay();
   return (day === 0 || day === 6); // 日曜日は0、土曜日は6
+}
+
+// <, > がslackリンクで使われるため、置換する
+function replaceAll(str) {
+  return str.replaceAll('<', '【').replaceAll('>', '】');
 }
 
 // 実行
