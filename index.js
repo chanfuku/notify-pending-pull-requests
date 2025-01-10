@@ -18,9 +18,10 @@ async function notifyPendingPullRequests() {
 
   for (const repo of REPOSITORIES_GITHUB) {
     const pullRequests = await getOpenPullRequests(repo.owner, repo.repo);
-    const pendingReviews = pullRequests.filter(pr => isReviewerAndNotApproved(pr));
+    const pullRequestsWithoutDraft = pullRequests.filter(pr => !pr.draft);
+    const pendingReviews = pullRequestsWithoutDraft.filter(pr => isReviewerAndNotApproved(pr));
     allPendingReviews = allPendingReviews.concat(pendingReviews);
-    const approvedReviews = pullRequests.filter(pr => isAssigneeAndAllApproved(pr));
+    const approvedReviews = pullRequestsWithoutDraft.filter(pr => isAssigneeAndAllApproved(pr));
     allApprovedReviews = allApprovedReviews.concat(approvedReviews);
   }
 
