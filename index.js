@@ -8,6 +8,10 @@ const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL; // Slack Webhook URL
 const REVIEWER_USERNAME = process.env.REVIEWER_USERNAME; // GitHub Username
 
 async function notifyPendingPullRequests() {
+  if (!REPOSITORIES_GITHUB || REPOSITORIES_GITHUB.length === 0) {
+    console.log('REPOSITORIES_GITHUB is not set or empty.');
+    return;
+  }
   if (isWeekend(new Date())) {
     console.log('weekend');
     return;
